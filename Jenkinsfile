@@ -10,13 +10,6 @@ pipeline {
  
     stages {
  
-        stage('Checkout') {
-            steps {
-                echo 'Checking out source code...'
-                checkout scm
-            }
-        }
- 
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
@@ -53,7 +46,7 @@ pipeline {
  
         stage('Test Application') {
             steps {
-                echo 'Testing web application...'
+                echo 'Testing application...'
  
                 sh '''
                     sleep 5
@@ -65,24 +58,12 @@ pipeline {
  
     post {
         success {
-            echo '======================================'
             echo 'Deployment Successful!'
-            echo '======================================'
-            echo "Application: http://SERVER-IP:${HOST_PORT}"
         }
  
         failure {
-            echo '======================================'
             echo 'Deployment Failed!'
-            echo '======================================'
- 
-            sh '''
-                docker logs ${CONTAINER_NAME} || true
-            '''
-        }
- 
-        always {
-            echo 'Jenkins pipeline completed.'
+            sh 'docker logs ${CONTAINER_NAME} || true'
         }
     }
 }
